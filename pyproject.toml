@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "switch2-presence"
+version = "0.1.0"
+description = "Windows tray app that reports Nintendo Switch 2 activity to Discord Rich Presence via OBS capture."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "Switch2DiscordPresence" }]
+dependencies = [
+  "opencv-python>=4.9",
+  "numpy>=1.26",
+  "Pillow>=10.2",
+  "pypresence>=4.3",
+  "pystray>=0.19.5",
+  "rapidfuzz>=3.6",
+  "websocket-client>=1.7",
+  "pywin32>=306",
+  "winsdk>=1.0.0b10",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pyinstaller>=6.4", "ruff>=0.6"]
+
+[project.gui-scripts]
+switch2-presence = "switch2_presence.__main__:main"
+
+[project.scripts]
+switch2-presence-cli = "switch2_presence.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+exclude = [".venv", "build", "dist"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["SIM102", "SIM105", "RUF046"]
