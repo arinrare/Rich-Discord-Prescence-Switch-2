@@ -199,9 +199,8 @@ not auto-enabled on restart.
 | Situation | Details | State | Timer |
 |---|---|---|---|
 | In game | `Playing <game>` | `Nintendo Switch 2` | runs |
-| HOME, exited game still selected | `Playing <game>` | `Nintendo Switch 2 • HOME menu` | frozen, no start shown |
-| HOME, browsing another title | `On Switch 2 HOME menu` | `Browsing: <title>` | frozen until a game launches |
-| HOME idle | `On Switch 2 HOME menu` | `Browsing: <title>` (if known) | none |
+| HOME (any title selected) | `On Switch 2 HOME menu` | `Browsing: <title>` | frozen until a game launches |
+| HOME idle | `On Switch 2 HOME menu` | `Nintendo Switch 2` | none |
 | System app launched | `On Nintendo Switch 2` | `Nintendo Switch 2` | none |
 | Handheld + game | `Playing <game>` | `Nintendo Switch 2 • Handheld` | runs |
 | Handheld generic | `Playing Handheld` | `Nintendo Switch 2` | runs |
@@ -316,10 +315,10 @@ signal.
 Make sure Discord is running, the client ID is real, and the `switch2` asset key
 exists on the application. Presence updates are throttled to ~15 s.
 
-**Why is the timer still moving on the HOME menu?**
-Discord's `start` timestamp always counts up. The app omits `start` while HOME
-mid-game, and on resume recomputes it from the frozen active seconds so play
-time is preserved.
+**How is play time kept across the HOME menu?**
+The app omits `start` while on HOME and freezes the active seconds. Relaunching
+the same game resumes from the frozen value; launching a different game starts a
+fresh timer.
 
 ---
 

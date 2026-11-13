@@ -600,7 +600,6 @@ class App:
             large_image=str(get(self.cfg, "discord.large_image", "switch2")),
             small_image=str(get(self.cfg, "discord.small_image", "")),
             home_selected=self.machine.selected_title,
-            freeze_on_home=bool(get(self.cfg, "timer.freeze_on_home", True)),
         )
         self.presence.set(payload, now, force=force)
         if mode is not self._last_mode:
@@ -616,7 +615,6 @@ class App:
         mode = self.machine.presence_mode()
         current = self.machine.current_game if mode in (
             PresenceMode.IN_GAME,
-            PresenceMode.HOME_MID_GAME,
             PresenceMode.HANDHELD_GAME,
         ) else None
         if current == self._session_game:

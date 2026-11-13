@@ -53,7 +53,6 @@ def build_payload(
     small_image: str = "",
     home_selected: str | None = None,
     power_on_ts: int | None = None,
-    freeze_on_home: bool = True,
 ) -> PresencePayload | None:
     """Map a presence mode to a Discord payload, or None to clear."""
     if mode is PresenceMode.OFF:
@@ -74,15 +73,6 @@ def build_payload(
             large_image=large_image,
             large_text="Nintendo Switch 2",
             small_image=small_image,
-        )
-    if mode is PresenceMode.HOME_MID_GAME:
-        return PresencePayload(
-            details=f"Playing {game}",
-            state="Nintendo Switch 2 • HOME menu",
-            large_image=large_image,
-            large_text=game or "Nintendo Switch 2",
-            small_image=small_image,
-            start=None if freeze_on_home else start_ts,
         )
     if mode is PresenceMode.HOME_IDLE:
         state = f"Browsing: {home_selected}" if home_selected else "Nintendo Switch 2"

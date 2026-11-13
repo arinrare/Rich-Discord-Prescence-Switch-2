@@ -14,16 +14,6 @@ def test_in_game_payload() -> None:
     assert kwargs["start"] == 1234
 
 
-def test_home_mid_game_payload_freezes_timer() -> None:
-    payload = build_payload(PresenceMode.HOME_MID_GAME, "Game", 1000, freeze_on_home=True)
-    assert payload is not None
-    assert payload.state.endswith("HOME menu")
-    assert "start" not in payload.to_kwargs()
-
-    payload = build_payload(PresenceMode.HOME_MID_GAME, "Game", 1000, freeze_on_home=False)
-    assert payload.to_kwargs()["start"] == 1000
-
-
 def test_home_idle_payload() -> None:
     payload = build_payload(PresenceMode.HOME_IDLE, None, None, home_selected="Zelda")
     assert payload is not None

@@ -27,7 +27,7 @@ def test_cold_boot_home_launch_home_resume() -> None:
     m.on_home(20, "Mario Kart World")
     assert m.state is GameState.HOME
     assert m.home_mid_game is True
-    assert m.presence_mode() is PresenceMode.HOME_MID_GAME
+    assert m.presence_mode() is PresenceMode.HOME_IDLE
     assert m.active_seconds(30) == 18  # frozen
 
     m.on_video(40)
@@ -138,7 +138,7 @@ def test_freeze_on_home_disabled_keeps_timer() -> None:
     m.on_home(1, "Game")
     m.on_video(2)
     m.on_home(12, "Game")
-    assert m.presence_mode() is PresenceMode.HOME_MID_GAME
+    assert m.presence_mode() is PresenceMode.HOME_IDLE
     assert m.active_seconds(20) == 18
 
 
@@ -198,7 +198,7 @@ def test_system_app_launch_drops_game_claim() -> None:
     assert m.active_seconds(50) == 18  # frozen, not claimed
 
 
-def test_home_browsing_after_game_switches_presence() -> None:
+def test_home_after_game_never_claims_playing() -> None:
     m = StateMachine()
     m.on_signal_on(0)
     m.on_home(1, "Game A")
@@ -206,8 +206,9 @@ def test_home_browsing_after_game_switches_presence() -> None:
     assert m.active_seconds(20) == 18
 
     m.on_home(20, "Game A")
-    assert m.presence_mode() is PresenceMode.HOME_MID_GAME
-    assert "HOME menu" in m.describe()
+    assert m.presence_mode() is PresenceMode.HOME_IDLE
+    assert m.presence_game() is None
+    assert m.describe() == "Browsing - Game A"
 
     m.on_home(22, "Game B")
     assert m.presence_mode() is PresenceMode.HOME_IDLE
@@ -217,8 +218,26 @@ def test_home_browsing_after_game_switches_presence() -> None:
     assert m.describe() == "Browsing - Game B"
 
     m.on_home(42, "Game A")
-    assert m.presence_mode() is PresenceMode.HOME_MID_GAME
-    assert m.describe() == "Game A (HOME menu)"
+    assert m.presence_mode() is PresenceMode.HOME_IDLE
+    assert m.presence_game() is None
+    assert m.describe() == "Browsing - Game A"
 
     m.selected_title = None
-    assert m.presence_mode() is PresenceMode.HOME_MID_GAME
+    assert m.presence_mode() is PresenceMode.HOME_IDLE
+
+
+def test_home_then_same_game_relaunch_resumes_timer() -> None:
+    m = StateMachine()
+    m.on_signal_on(0)
+    m.on_home(1, "Game A")
+    m.on_video(2)
+    assert m.active_seconds(22) == 20
+
+    m.on_home(22, "Game A")
+    assert m.presence_mode() is PresenceMode.HOME_IDLE
+    assert m.active_seconds(50) == 20  # frozen on HOME
+
+    m.on_video(60)
+    assert m.presence_mode() is PresenceMode.IN_GAME
+    assert m.presence_game() == "Game A"
+    assert m.active_seconds(70) == 30  # resumed, not reset

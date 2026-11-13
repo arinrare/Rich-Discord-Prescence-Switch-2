@@ -69,7 +69,8 @@ def test_presence_follows_state(app: App) -> None:
     app._update_presence(21)
     payload = app.presence.calls[-1]  # type: ignore[attr-defined]
     assert payload is not None
-    assert "HOME" in payload.state
+    assert payload.details == "On Switch 2 HOME menu"
+    assert payload.state == "Browsing: Mario Kart World"
     assert payload.start is None
 
 

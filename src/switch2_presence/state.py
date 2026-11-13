@@ -22,7 +22,6 @@ class GameState(StrEnum):
 class PresenceMode(StrEnum):
     OFF = "OFF"
     HOME_IDLE = "HOME_IDLE"
-    HOME_MID_GAME = "HOME_MID_GAME"
     IN_GAME = "IN_GAME"
     HANDHELD_GAME = "HANDHELD_GAME"
     HANDHELD_GENERIC = "HANDHELD_GENERIC"
@@ -286,28 +285,20 @@ class StateMachine:
             self.power_on_at = None
 
     # ---- derived ---------------------------------------------------------
-    def _home_presence_game(self) -> str | None:
-        """Game shown as mid-game on HOME, or None while browsing another title."""
-        if not (self.home_mid_game and self.current_game):
-            return None
-        if self.selected_title and self.selected_title != self.current_game:
-            return None
-        return self.current_game
-
     def presence_mode(self) -> PresenceMode:
         if self.no_presence:
             return PresenceMode.OFF
         if self.state is GameState.HANDHELD:
             return PresenceMode.HANDHELD_GAME if self.current_game else PresenceMode.HANDHELD_GENERIC
         if self.state is GameState.HOME:
-            return PresenceMode.HOME_MID_GAME if self._home_presence_game() else PresenceMode.HOME_IDLE
+            return PresenceMode.HOME_IDLE
         if self.state is GameState.IN_GAME:
             return PresenceMode.IN_GAME
         return PresenceMode.OFF
 
     def presence_game(self) -> str | None:
         mode = self.presence_mode()
-        if mode in (PresenceMode.HOME_MID_GAME, PresenceMode.IN_GAME, PresenceMode.HANDHELD_GAME):
+        if mode in (PresenceMode.IN_GAME, PresenceMode.HANDHELD_GAME):
             return self.current_game
         return None
 
@@ -321,9 +312,6 @@ class StateMachine:
                 return f"Handheld — {self.current_game}"
             return "Handheld — Playing Handheld"
         if self.state is GameState.HOME:
-            mid_game = self._home_presence_game()
-            if mid_game:
-                return f"{mid_game} (HOME menu)"
             if self.selected_title:
                 return f"Browsing - {self.selected_title}"
             return "HOME menu"
